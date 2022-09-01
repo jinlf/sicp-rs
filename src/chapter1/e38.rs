@@ -1,0 +1,45 @@
+fn cont_frac(n: impl Fn(usize) -> f64, d: impl Fn(usize) -> f64, k: usize) -> f64 {
+    fn iter(n: impl Fn(usize) -> f64, d: impl Fn(usize) -> f64, k: usize, result: f64) -> f64 {
+        if k == 0 {
+            result
+        } else {
+            let result = n(k) / (d(k) + result);
+            iter(n, d, k - 1, result)
+        }
+    }
+    iter(n, d, k, 0.0)
+}
+fn cont_frac1(n: impl Fn(usize) -> f64, d: impl Fn(usize) -> f64, k: usize) -> f64 {
+    fn iter(n: impl Fn(usize) -> f64, d: impl Fn(usize) -> f64, k: usize, cur: usize) -> f64 {
+        if cur > k {
+            0.0
+        } else {
+            let n_cur = n(cur);
+            1.0 / (d(cur) / n(cur) + iter(n, d, k, cur + 1) / n_cur)
+        }
+    }
+    iter(n, d, k, 1)
+}
+
+fn main() {
+    println!(
+        "{}",
+        2.0 + cont_frac(
+            |_| 1.0,
+            |i: usize| (if i % 3 == 2 { 2 * (i + 2) / 3 } else { 1 }) as f64,
+            1000
+        )
+    );
+    println!(
+        "{}",
+        2.0 + cont_frac1(
+            |_| 1.0,
+            |i: usize| (if i % 3 == 2 { 2 * (i + 2) / 3 } else { 1 }) as f64,
+            1000
+        )
+    );
+}
+#[test]
+fn test() {
+    main();
+}
